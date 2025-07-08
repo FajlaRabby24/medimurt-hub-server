@@ -36,6 +36,7 @@ async function run() {
       next();
     });
 
+    // all routes
     app.use("/users", UserRouter);
 
     await client.db("admin").command({ ping: 1 });
