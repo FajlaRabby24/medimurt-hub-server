@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const errorHandler = require("./middleware/ErrorHandler");
+const UserRouter = require("./Routes/userRouter");
 dotenv.config();
 
 const app = express();
@@ -23,7 +25,18 @@ async function run() {
   try {
     await client.connect();
 
-    const db = client.db("parcelDB");
+    const db = client.db("medicineCenter");
+    const usersCollection = db.collection("users");
+
+    // Attach db instance to request
+    app.use((req, res, next) => {
+      req.db = {
+        usersCollection,
+      };
+      next();
+    });
+
+    app.use("/users", UserRouter);
 
     await client.db("admin").command({ ping: 1 });
     console.log("🚀 Pinged your deployment.");
@@ -34,8 +47,10 @@ run().catch(console.dir);
 
 // Sample route
 app.get("/", (req, res) => {
-  res.send("Parcel Server is running");
+  res.send("Medicine server is running");
 });
+
+app.use(errorHandler);
 
 // Start the server
 app.listen(port, () => {
