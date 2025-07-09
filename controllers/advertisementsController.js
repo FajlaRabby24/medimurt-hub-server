@@ -3,8 +3,14 @@ const { ObjectId } = require("mongodb");
 // 🔹 GET /api/advertisements/mine
 const getSellerAdvertisements = async (req, res) => {
   try {
-    const advertise = await req.db.advertisementsCollection.find().toArray();
-    res.status(200).json(advertise);
+    const email = req.query.email;
+    const advertise = await req.db.advertisementsCollection
+      .find({
+        created_by: email,
+      })
+      .toArray();
+    // res.status(200).json(advertise);
+    res.send(advertise);
   } catch (err) {
     res.status(500).json({ message: "Error fetching ads", error: err.message });
   }
