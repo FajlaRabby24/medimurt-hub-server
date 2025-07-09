@@ -1,7 +1,8 @@
 // Create new user
-const createUser = async (req, res) => {
+const createOrUpdateUser = async (req, res) => {
   try {
     const newUser = req.body;
+    const email = newUser.email;
 
     // Basic validation
     if (!newUser) {
@@ -10,10 +11,23 @@ const createUser = async (req, res) => {
 
     // Check if user already exists
     const existingUser = await req.db.usersCollection.findOne({
-      email: newUser.email,
+      email,
     });
     if (existingUser) {
-      return res.status(409).json({ message: "User already exists" });
+      const updateDoc = {
+        $set: {
+          last_logged_in: new Date().toISOString(),
+        },
+      };
+      // Update last_login field
+      const result = await req.db.usersCollection.updateOne(
+        { email: newUser.email },
+        updateDoc
+      );
+      return res.status(200).json({
+        message: "Login successful",
+        ...result,
+      });
     }
 
     // Create and save the user
@@ -25,29 +39,23 @@ const createUser = async (req, res) => {
   }
 };
 
-// login user
-const loginUser = async (req, res) => {
+//  GET: Get user role by email
+const getUserRollByEmail = async (req, res) => {
   try {
-    const { email } = req.query;
-
+    const email = req.params.email;
     if (!email) {
-      return res.status(400).json({ message: "Email are required" });
+      return res.status(400).send({ message: "Email is required" });
     }
-    const updateDoc = {
-      $set: {
-        last_logged_in: new Date().toISOString(),
-      },
-    };
-    // Update last_login field
-    const result = await req.db.usersCollection.updateOne({ email }, updateDoc);
-    res.status(200).json({
-      message: "Login successful",
-      ...result,
-    });
+    const user = await req.db.usersCollection.findOne({ email });
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    res.send({ role: user.role || "user" });
   } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error getting user role:", error);
+    res.status(500).send({ message: "Failed to get role" });
   }
 };
 
-module.exports = { createUser, loginUser };
+module.exports = { createOrUpdateUser, getUserRollByEmail };
