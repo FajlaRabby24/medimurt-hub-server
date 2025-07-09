@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const errorHandler = require("./middleware/ErrorHandler");
 const UserRouter = require("./Routes/userRouter");
+const AdvertiseRouter = require("./Routes/advertisementsRouter");
 dotenv.config();
 
 const app = express();
@@ -27,17 +28,20 @@ async function run() {
 
     const db = client.db("medicineCenter");
     const usersCollection = db.collection("users");
+    const advertisementsCollection = db.collection("advertisements");
 
     // Attach db instance to request
     app.use((req, res, next) => {
       req.db = {
         usersCollection,
+        advertisementsCollection,
       };
       next();
     });
 
     // all routes
-    app.use("/users", UserRouter);
+    app.use("/api/users", UserRouter);
+    app.use("/api/advertisements", AdvertiseRouter);
 
     await client.db("admin").command({ ping: 1 });
     console.log("🚀 Pinged your deployment.");
