@@ -6,6 +6,7 @@ const errorHandler = require("./middleware/ErrorHandler");
 const UserRouter = require("./Routes/userRouter");
 const AdvertiseRouter = require("./Routes/advertisementsRouter");
 const MedicineRouter = require("./Routes/medicineRouter");
+const CategoryRouter = require("./Routes/CategoryRouter");
 dotenv.config();
 
 const app = express();
@@ -31,6 +32,7 @@ async function run() {
     const usersCollection = db.collection("users");
     const advertisementsCollection = db.collection("advertisements");
     const medicinesCollection = db.collection("medicines");
+    const medicinesCategoryCollection = db.collection("medicinesCategory");
 
     // Attach db instance to request
     app.use((req, res, next) => {
@@ -38,6 +40,7 @@ async function run() {
         usersCollection,
         advertisementsCollection,
         medicinesCollection,
+        medicinesCategoryCollection,
       };
       next();
     });
@@ -46,6 +49,7 @@ async function run() {
     app.use("/api/users", UserRouter);
     app.use("/api/advertisements", AdvertiseRouter);
     app.use("/api/medicines", MedicineRouter);
+    app.use("/api/categories", CategoryRouter);
 
     await client.db("admin").command({ ping: 1 });
     console.log("🚀 Pinged your deployment.");
