@@ -63,9 +63,7 @@ const getUserRollByEmail = async (req, res) => {
 // GET: Get  all user
 const getAllUser = async (req, res) => {
   try {
-    const users = await req.db.usersCollection
-      .find({ role: { $ne: "admin" } })
-      .toArray();
+    const users = await req.db.usersCollection.find().toArray();
     res.status(200).send(users);
   } catch (error) {
     console.error("Error fetching users:", error);

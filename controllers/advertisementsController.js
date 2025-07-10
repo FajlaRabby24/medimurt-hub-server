@@ -33,7 +33,7 @@ const addAdvertisement = async (req, res) => {
     const newAd = req.body;
 
     if (!newAd) {
-      return res.status(400).json({ message: "Add information are required" });
+      return res.status(400).json({ message: "Ads information are required" });
     }
 
     const newAdvertise = {
@@ -83,10 +83,23 @@ const updateAdStatus = async (req, res) => {
   }
 };
 
+// GET: Get active advertisements
+const getActiveAd = async (req, res) => {
+  try {
+    const result = await req.db.advertisementsCollection
+      .find({ status: "active" })
+      .toArray();
+    res.send(result);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch active advertisements" });
+  }
+};
+
 module.exports = {
   getSellerAdvertisements,
   addAdvertisement,
   deleteAdvertisement,
   getAllAdvetisements,
   updateAdStatus,
+  getActiveAd,
 };
