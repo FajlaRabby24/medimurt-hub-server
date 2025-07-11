@@ -31,7 +31,10 @@ const getAllMedicineByCategory = async (req, res) => {
 const addMedicine = async (req, res) => {
   try {
     const medicine = req.body;
-    const result = await req.db.medicinesCollection.insertOne(medicine);
+    const result = await req.db.medicinesCollection.insertOne({
+      ...medicine,
+      created_at: new Date().toISOString(),
+    });
     res.status(201).send(result);
   } catch (err) {
     res.status(500).send({ message: "Failed to add medicine." });
