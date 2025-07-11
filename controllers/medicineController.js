@@ -13,6 +13,20 @@ const getMedicine = async (req, res) => {
   }
 };
 
+// Get all medicine by category
+const getAllMedicineByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const medicines = await req.db.medicinesCollection
+      .find({ category })
+      .toArray();
+
+    res.status(200).json(medicines);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch medicines." });
+  }
+};
+
 // Add a new medicine
 const addMedicine = async (req, res) => {
   try {
@@ -36,4 +50,9 @@ const deleteMedicine = async (req, res) => {
     res.status(500).send({ message: "Failed to delete medicine." });
   }
 };
-module.exports = { getMedicine, addMedicine, deleteMedicine };
+module.exports = {
+  getMedicine,
+  addMedicine,
+  deleteMedicine,
+  getAllMedicineByCategory,
+};
