@@ -27,6 +27,21 @@ const getAllMedicineByCategory = async (req, res) => {
   }
 };
 
+// GET: Get discounted medicine
+const getDiscountedMedicines = async (req, res) => {
+  try {
+    const discountedMedicines = await req.db.medicinesCollection
+      .find({ discount: { $gt: 0 } })
+      .toArray();
+
+    res.status(200).json(discountedMedicines);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch discount medicines", error });
+  }
+};
+
 // Add a new medicine
 const addMedicine = async (req, res) => {
   try {
@@ -58,4 +73,5 @@ module.exports = {
   addMedicine,
   deleteMedicine,
   getAllMedicineByCategory,
+  getDiscountedMedicines,
 };
