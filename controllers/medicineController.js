@@ -1,7 +1,7 @@
 const { ObjectId } = require("mongodb");
 
 // Get all medicines of the logged-in seller
-const getMedicine = async (req, res) => {
+const getMineMedicine = async (req, res) => {
   try {
     const email = req.query.email;
     const result = await req.db.medicinesCollection
@@ -68,10 +68,22 @@ const deleteMedicine = async (req, res) => {
     res.status(500).send({ message: "Failed to delete medicine." });
   }
 };
+
+// GET: Get all medicines
+const getAllMedicines = async (req, res) => {
+  try {
+    const medicines = await req.db.medicinesCollection.find().toArray();
+    res.status(200).json(medicines);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch medicines", error });
+  }
+};
+
 module.exports = {
-  getMedicine,
+  getMineMedicine,
   addMedicine,
   deleteMedicine,
   getAllMedicineByCategory,
   getDiscountedMedicines,
+  getAllMedicines,
 };
