@@ -69,10 +69,11 @@ const updateQuantity = async (req, res) => {
   try {
     const id = req.params.id;
     const { quantity } = req.body;
+    const { total_price } = req.body;
 
     const result = await req.db.cartCollection.updateOne(
       { _id: new ObjectId(id) },
-      { $set: { quantity } }
+      { $set: { quantity, total_price } }
     );
 
     res.status(200).json(result);
