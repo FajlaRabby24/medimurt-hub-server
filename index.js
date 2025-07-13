@@ -2,13 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const { MongoClient, ServerApiVersion } = require("mongodb");
+dotenv.config();
 const errorHandler = require("./middleware/ErrorHandler");
 const UserRouter = require("./Routes/userRouter");
 const AdvertiseRouter = require("./Routes/advertisementsRouter");
 const MedicineRouter = require("./Routes/medicineRouter");
 const CategoryRouter = require("./Routes/CategoryRouter");
 const CartRouter = require("./Routes/cartRouter");
-dotenv.config();
+const OrdersRouter = require("./Routes/ordersRouter");
+const stripe = require("stripe")(process.env.PAYMENT_GATEWAY_KEY);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -30,11 +32,13 @@ async function run() {
     await client.connect();
 
     const db = client.db("medicineCenter");
+    // collection
     const usersCollection = db.collection("users");
     const advertisementsCollection = db.collection("advertisements");
     const medicinesCollection = db.collection("medicines");
     const medicinesCategoryCollection = db.collection("medicinesCategory");
     const cartCollection = db.collection("cart");
+    const ordersCollection = db.collection("orders");
 
     // Attach db instance to request
     app.use((req, res, next) => {
@@ -44,6 +48,7 @@ async function run() {
         medicinesCollection,
         medicinesCategoryCollection,
         cartCollection,
+        ordersCollection,
       };
       next();
     });
@@ -54,6 +59,24 @@ async function run() {
     app.use("/api/medicines", MedicineRouter);
     app.use("/api/categories", CategoryRouter);
     app.use("/api/cart", CartRouter);
+    app.use("/api/orders", OrdersRouter);
+
+    // payment intent
+    app.post("/create-payment-intent", async (req, res) => {
+      const grandTotalInCents = req.body.grandTotalInCents;
+      console.log(grandTotalInCents);
+      try {
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: grandTotalInCents,
+          currency: "usd",
+          payment_method_types: ["card"],
+        });
+
+        res.json({ clientSecret: paymentIntent.client_secret });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log("🚀 Pinged your deployment.");
