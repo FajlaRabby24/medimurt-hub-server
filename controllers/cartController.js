@@ -82,10 +82,57 @@ const updateQuantity = async (req, res) => {
   }
 };
 
+// GET /api/cart/all-payments
+const getAllPayments = async (req, res) => {
+  try {
+    const result = await req.db.cartCollection
+      .aggregate([
+        {
+          $group: {
+            _id: "$user_email",
+            user_email: { $first: "$user_email" },
+            transaction_id: { $first: "$transaction_id" },
+            payment_status: { $first: "$payment_status" },
+            total_price: { $sum: "$total_price" },
+          },
+        },
+        { $sort: { payment_status: 1 } }, // Show pending first
+      ])
+      .toArray();
+
+    res.send(result);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch payment data", error });
+  }
+};
+
+// PATCH /api/cart/accept-payment/:email
+const acceptPayment = async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    const result = await req.db.cartCollection.updateMany(
+      { user_email: email, payment_status: { $ne: "paid" } },
+      {
+        $set: {
+          payment_status: "paid",
+          approved_at: new Date().toISOString(),
+        },
+      }
+    );
+
+    res.send(result);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update payemnt status", error });
+  }
+};
+
 module.exports = {
   addToCart,
   updateQuantity,
   getUserCart,
   clearCart,
   removeCartItem,
+  getAllPayments,
+  acceptPayment,
 };
