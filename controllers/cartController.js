@@ -28,7 +28,7 @@ const getUserCart = async (req, res) => {
     if (!email) return res.status(400).json({ message: "Missing email" });
 
     const cartItems = await req.db.cartCollection
-      .find({ user_email: email })
+      .find({ user_email: email, payment_status: { $ne: "paid" } })
       .toArray();
     res.status(200).json(cartItems);
   } catch (error) {
@@ -127,6 +127,30 @@ const acceptPayment = async (req, res) => {
   }
 };
 
+// update after payment
+const updateCartAfterPayment = async (req, res) => {
+  try {
+    const { email, transactionId } = req.body;
+    console.log(req.body);
+    if (!email && !transactionId)
+      return res.status(400).json({ message: "Missing required data" });
+
+    const result = await req.db.cartCollection.updateMany(
+      { user_email: email, payment_status: { $ne: "paid" } },
+      {
+        $set: {
+          transaction_id: transactionId,
+          paid_at: new Date().toISOString(),
+        },
+      }
+    );
+
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update", error });
+  }
+};
+
 module.exports = {
   addToCart,
   updateQuantity,
@@ -135,4 +159,5 @@ module.exports = {
   removeCartItem,
   getAllPayments,
   acceptPayment,
+  updateCartAfterPayment,
 };
