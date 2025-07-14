@@ -1,18 +1,5 @@
 const { ObjectId } = require("mongodb");
 
-// Get all medicines of the logged-in seller
-const getMineMedicine = async (req, res) => {
-  try {
-    const email = req.query.email;
-    const result = await req.db.medicinesCollection
-      .find({ created_by: email })
-      .toArray();
-    res.status(200).send(result);
-  } catch (err) {
-    res.status(500).send({ message: "Failed to fetch medicines." });
-  }
-};
-
 // Get all medicine by category
 const getAllMedicineByCategory = async (req, res) => {
   try {
@@ -42,33 +29,6 @@ const getDiscountedMedicines = async (req, res) => {
   }
 };
 
-// Add a new medicine
-const addMedicine = async (req, res) => {
-  try {
-    const medicine = req.body;
-    const result = await req.db.medicinesCollection.insertOne({
-      ...medicine,
-      created_at: new Date().toISOString(),
-    });
-    res.status(201).send(result);
-  } catch (err) {
-    res.status(500).send({ message: "Failed to add medicine." });
-  }
-};
-
-// Delete a medicine by ID
-const deleteMedicine = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const result = await req.db.medicinesCollection.deleteOne({
-      _id: new ObjectId(id),
-    });
-    res.send(result);
-  } catch (err) {
-    res.status(500).send({ message: "Failed to delete medicine." });
-  }
-};
-
 // GET: Get all medicines
 const getAllMedicines = async (req, res) => {
   try {
@@ -80,9 +40,6 @@ const getAllMedicines = async (req, res) => {
 };
 
 module.exports = {
-  getMineMedicine,
-  addMedicine,
-  deleteMedicine,
   getAllMedicineByCategory,
   getDiscountedMedicines,
   getAllMedicines,

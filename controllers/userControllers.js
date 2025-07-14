@@ -70,8 +70,44 @@ const getUserPaymentHistory = async (req, res) => {
   res.send(result);
 };
 
+// GET all categories || Admin
+const getAllCategories = async (req, res) => {
+  try {
+    const categories = await req.db.medicinesCategoryCollection
+      .aggregate([
+        {
+          $lookup: {
+            from: "medicines", // join with medicines collection
+            localField: "category_name", // category name in this collection
+            foreignField: "category", // category field in medicines
+            as: "medicines", // store matched medicines here
+          },
+        },
+        {
+          $addFields: {
+            total_medicines: { $size: "$medicines" }, // count number of medicines
+          },
+        },
+        {
+          $project: {
+            medicines: 0, // remove full medicines array from output
+          },
+        },
+      ])
+      .toArray();
+
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch categories with medicine count",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createOrUpdateUser,
   getUserRollByEmail,
   getUserPaymentHistory,
+  getAllCategories,
 };
