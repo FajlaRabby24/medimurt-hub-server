@@ -5,15 +5,15 @@ const {
   removeCartItem,
   clearCart,
   updateQuantity,
-  getAllPayments,
   acceptPayment,
   updateCartAfterPayment,
+  getAllPendingPayments,
 } = require("../controllers/cartController");
 const CartRouter = express.Router();
 
 CartRouter.post("/", addToCart);
 CartRouter.get("/", getUserCart);
-CartRouter.get("/all-payments", getAllPayments);
+CartRouter.get("/all-payments", getAllPendingPayments);
 CartRouter.delete("/clear", clearCart);
 CartRouter.delete("/:id", removeCartItem);
 CartRouter.patch("/update", updateCartAfterPayment);

@@ -83,10 +83,13 @@ const updateQuantity = async (req, res) => {
 };
 
 // GET /api/cart/all-payments
-const getAllPayments = async (req, res) => {
+const getAllPendingPayments = async (req, res) => {
   try {
     const result = await req.db.cartCollection
       .aggregate([
+        {
+          $match: { payment_status: "pending" }, // ✅ only get pending
+        },
         {
           $group: {
             _id: "$user_email",
@@ -96,7 +99,7 @@ const getAllPayments = async (req, res) => {
             total_price: { $sum: "$total_price" },
           },
         },
-        { $sort: { payment_status: 1 } }, // Show pending first
+        { $sort: { payment_status: 1 } },
       ])
       .toArray();
 
@@ -157,7 +160,7 @@ module.exports = {
   getUserCart,
   clearCart,
   removeCartItem,
-  getAllPayments,
+  getAllPendingPayments,
   acceptPayment,
   updateCartAfterPayment,
 };
