@@ -12,6 +12,7 @@ const CartRouter = require("./Routes/cartRouter");
 const OrdersRouter = require("./Routes/ordersRouter");
 const SalesRouter = require("./Routes/salesRouter");
 const SellerRouter = require("./Routes/sellerRouter");
+const AdminRouter = require("./Routes/AdminRouter");
 const stripe = require("stripe")(process.env.PAYMENT_GATEWAY_KEY);
 
 const app = express();
@@ -56,14 +57,16 @@ async function run() {
     });
 
     // all routes
+    app.use("/api/admin", AdminRouter);
     app.use("/api/users", UserRouter);
+    app.use("/api/seller", SellerRouter);
+
     app.use("/api/advertisements", AdvertiseRouter);
     app.use("/api/medicines", MedicineRouter);
     app.use("/api/categories", CategoryRouter);
     app.use("/api/cart", CartRouter);
     app.use("/api/orders", OrdersRouter);
     app.use("/api/sales", SalesRouter);
-    app.use("/api/seller", SellerRouter);
 
     // payment intent
     app.post("/create-payment-intent", async (req, res) => {
