@@ -11,6 +11,7 @@ const CategoryRouter = require("./Routes/CategoryRouter");
 const CartRouter = require("./Routes/cartRouter");
 const OrdersRouter = require("./Routes/ordersRouter");
 const SalesRouter = require("./Routes/salesRouter");
+const SellerRouter = require("./Routes/sellerRouter");
 const stripe = require("stripe")(process.env.PAYMENT_GATEWAY_KEY);
 
 const app = express();
@@ -62,6 +63,7 @@ async function run() {
     app.use("/api/cart", CartRouter);
     app.use("/api/orders", OrdersRouter);
     app.use("/api/sales", SalesRouter);
+    app.use("/api/seller", SellerRouter);
 
     // payment intent
     app.post("/create-payment-intent", async (req, res) => {
