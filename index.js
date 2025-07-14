@@ -8,6 +8,12 @@ const UserRouter = require("./Routes/userRouter");
 const SellerRouter = require("./Routes/sellerRouter");
 const AdminRouter = require("./Routes/AdminRouter");
 const stripe = require("stripe")(process.env.PAYMENT_GATEWAY_KEY);
+// firebase
+const admin = require("firebase-admin");
+const serviceAccount = require("./multi-vendor-firebase-key.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 const app = express();
 const port = process.env.PORT || 5000;
