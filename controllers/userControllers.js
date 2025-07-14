@@ -35,7 +35,7 @@ const createOrUpdateUser = async (req, res) => {
       };
       // Update last_login field
       const result = await req.db.usersCollection.updateOne(
-        { email: newUser.email },
+        { email },
         updateDoc
       );
       return res.status(200).json({

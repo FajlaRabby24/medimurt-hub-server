@@ -10,25 +10,53 @@ const {
   deleteAdvertisement,
 } = require("../controllers/sellerController");
 const { verifyFBToken } = require("../middleware/verifyFBToken");
+const verifySeller = require("../middleware/verifySeller");
 const SellerRouter = exprerss.Router();
 
-SellerRouter.get("/payment-history", verifyFBToken, getSellerPaymentHistory);
+SellerRouter.get(
+  "/payment-history",
+  verifyFBToken,
+  verifySeller,
+  getSellerPaymentHistory
+);
 
-SellerRouter.get("/sales-summary", verifyFBToken, getSellerSalesSummary);
+SellerRouter.get(
+  "/sales-summary",
+  verifyFBToken,
+  verifySeller,
+  getSellerSalesSummary
+);
 
-SellerRouter.get("/medicines/mine", verifyFBToken, getMineMedicine);
-SellerRouter.post("/add-medicines", verifyFBToken, addMedicine);
-SellerRouter.delete("/delete-medicines/:id", verifyFBToken, deleteMedicine);
+SellerRouter.get(
+  "/medicines/mine",
+  verifyFBToken,
+  verifySeller,
+  getMineMedicine
+);
+SellerRouter.post("/add-medicines", verifyFBToken, verifySeller, addMedicine);
+SellerRouter.delete(
+  "/delete-medicines/:id",
+  verifyFBToken,
+  verifySeller,
+  deleteMedicine
+);
 
 SellerRouter.get(
   "/advertisements/mine",
   verifyFBToken,
+  verifySeller,
   getSellerAdvertisements
 );
-SellerRouter.post("/add-advertisements", verifyFBToken, addAdvertisement);
+SellerRouter.post(
+  "/add-advertisements",
+  verifyFBToken,
+  verifySeller,
+  addAdvertisement
+);
 SellerRouter.delete(
   "/delete-advertisements/:id",
   verifyFBToken,
+  verifySeller,
   deleteAdvertisement
 );
 
