@@ -97,9 +97,20 @@ const updateUserRole = async (req, res) => {
   }
 };
 
+// GET /api/user/payment-history?user=email@example.com
+const getUserPaymentHistory = async (req, res) => {
+  const { user } = req.query;
+  const result = await req.db.cartCollection
+    .find({ user_email: user })
+    .sort({ created_at: -1 }) // most recent first
+    .toArray();
+  res.send(result);
+};
+
 module.exports = {
   createOrUpdateUser,
   getUserRollByEmail,
   getAllUser,
   updateUserRole,
+  getUserPaymentHistory,
 };
