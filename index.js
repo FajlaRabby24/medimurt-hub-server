@@ -30,6 +30,11 @@ const client = new MongoClient(process.env.MONGODB_URI, {
   },
 });
 
+app.use((req, res, next) => {
+  req.admin = admin;
+  next();
+});
+
 async function run() {
   try {
     await client.connect();
