@@ -13,21 +13,24 @@ const {
   createCategory,
   deleteCategory,
 } = require("../controllers/adminController");
+const { verifyFBToken } = require("../middleware/verifyFBToken");
 const AdminRouter = express.Router();
 
-AdminRouter.get("/advertisements", getAllAdvetisements);
-AdminRouter.patch("/advertisements/:id", updateAdStatus);
-AdminRouter.patch("/update-user-role/:id", updateUserRole);
-AdminRouter.patch("/categories/:id", updateCategory);
+AdminRouter.get("/advertisements", verifyFBToken, getAllAdvetisements);
+AdminRouter.patch("/advertisements/:id", verifyFBToken, updateAdStatus);
 
-AdminRouter.get("/manage-users", getAllUser);
-AdminRouter.get("/categories", getAllCategories);
-AdminRouter.get("/cart/all-payments", getAllPendingPayments);
-AdminRouter.patch("/cart/accept-payment", acceptPayment);
-AdminRouter.get("/sales", getSalesData);
-AdminRouter.get("/sales-summary", getSalesSummaryForAdmin);
+AdminRouter.patch("/update-user-role/:id", verifyFBToken, updateUserRole);
+AdminRouter.get("/manage-users", verifyFBToken, getAllUser);
 
-AdminRouter.post("/categories", createCategory);
-AdminRouter.delete("/categories/:id", deleteCategory);
+AdminRouter.get("/cart/all-payments", verifyFBToken, getAllPendingPayments);
+AdminRouter.patch("/cart/accept-payment", verifyFBToken, acceptPayment);
+
+AdminRouter.get("/sales", verifyFBToken, getSalesData);
+AdminRouter.get("/sales-summary", verifyFBToken, getSalesSummaryForAdmin);
+
+AdminRouter.patch("/categories/:id", verifyFBToken, updateCategory);
+AdminRouter.get("/categories", verifyFBToken, getAllCategories);
+AdminRouter.post("/categories", verifyFBToken, createCategory);
+AdminRouter.delete("/categories/:id", verifyFBToken, deleteCategory);
 
 module.exports = AdminRouter;

@@ -15,22 +15,27 @@ const {
   updateCartAfterPayment,
   getAllMedicineByCategory,
 } = require("../controllers/userControllers");
+const { verifyFBToken } = require("../middleware/verifyFBToken");
 const UserRouter = express.Router();
 
 UserRouter.get("/advertisements/active", getActiveAd);
+
 UserRouter.post("/", createOrUpdateUser);
-UserRouter.get("/payment-history", getUserPaymentHistory);
-UserRouter.get("/:email/role", getUserRollByEmail);
+
 UserRouter.get("/categories", getAllCategories);
+
 UserRouter.get("/medicines/discounted", getDiscountedMedicines);
 UserRouter.get("/medicines", getAllMedicines);
 UserRouter.get("/medicines/category/:category", getAllMedicineByCategory);
 
-UserRouter.post("/add-to-cart", addToCart);
-UserRouter.patch("/cart/update", updateCartAfterPayment);
-UserRouter.patch("/cart/:id", updateQuantity);
-UserRouter.delete("/cart/clear", clearCart);
-UserRouter.delete("/cart/:id", removeCartItem);
-UserRouter.get("/cart", getUserCart);
+UserRouter.get("/cart", verifyFBToken, getUserCart);
+UserRouter.post("/add-to-cart", verifyFBToken, addToCart);
+UserRouter.patch("/cart/update", verifyFBToken, updateCartAfterPayment);
+UserRouter.patch("/cart/:id", verifyFBToken, updateQuantity);
+UserRouter.delete("/cart/clear", verifyFBToken, clearCart);
+UserRouter.delete("/cart/:id", verifyFBToken, removeCartItem);
+
+UserRouter.get("/:email/role", verifyFBToken, getUserRollByEmail);
+UserRouter.get("/payment-history", verifyFBToken, getUserPaymentHistory);
 
 module.exports = UserRouter;
