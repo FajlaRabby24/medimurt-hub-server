@@ -16,17 +16,6 @@ const getSellerAdvertisements = async (req, res) => {
   }
 };
 
-// Get all advertisements (Admin access)
-const getAllAdvetisements = async (req, res) => {
-  try {
-    const result = await req.db.advertisementsCollection.find().toArray();
-    res.status(200).json(result);
-  } catch (error) {
-    console.error("Failed to fetch advertisements:", error);
-    res.status(500).json({ error: "Failed to fetch advertisements" });
-  }
-};
-
 // 🔹 POST /api/advertisements
 const addAdvertisement = async (req, res) => {
   try {
@@ -66,23 +55,6 @@ const deleteAdvertisement = async (req, res) => {
   }
 };
 
-// Update advertisement status (accepted/rejected)
-const updateAdStatus = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { status } = req.body;
-    const result = await req.db.advertisementsCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { status } }
-    );
-    res.send(result);
-  } catch (err) {
-    res
-      .status(500)
-      .send({ message: "Failed to update advertisement status", error: err });
-  }
-};
-
 // GET: Get active advertisements
 const getActiveAd = async (req, res) => {
   try {
@@ -99,7 +71,5 @@ module.exports = {
   getSellerAdvertisements,
   addAdvertisement,
   deleteAdvertisement,
-  getAllAdvetisements,
-  updateAdStatus,
   getActiveAd,
 };

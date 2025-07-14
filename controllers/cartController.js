@@ -82,54 +82,6 @@ const updateQuantity = async (req, res) => {
   }
 };
 
-// GET /api/cart/all-payments
-const getAllPendingPayments = async (req, res) => {
-  try {
-    const result = await req.db.cartCollection
-      .aggregate([
-        {
-          $match: { payment_status: "pending" }, // ✅ only get pending
-        },
-        {
-          $group: {
-            _id: "$user_email",
-            user_email: { $first: "$user_email" },
-            transaction_id: { $first: "$transaction_id" },
-            payment_status: { $first: "$payment_status" },
-            total_price: { $sum: "$total_price" },
-          },
-        },
-        { $sort: { payment_status: 1 } },
-      ])
-      .toArray();
-
-    res.send(result);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch payment data", error });
-  }
-};
-
-// PATCH /api/cart/accept-payment/:email
-const acceptPayment = async (req, res) => {
-  try {
-    const { email } = req.query;
-
-    const result = await req.db.cartCollection.updateMany(
-      { user_email: email, payment_status: { $ne: "paid" } },
-      {
-        $set: {
-          payment_status: "paid",
-          approved_at: new Date().toISOString(),
-        },
-      }
-    );
-
-    res.send(result);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to update payemnt status", error });
-  }
-};
-
 // update after payment
 const updateCartAfterPayment = async (req, res) => {
   try {
@@ -160,7 +112,5 @@ module.exports = {
   getUserCart,
   clearCart,
   removeCartItem,
-  getAllPendingPayments,
-  acceptPayment,
   updateCartAfterPayment,
 };

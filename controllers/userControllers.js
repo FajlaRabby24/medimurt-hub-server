@@ -60,43 +60,6 @@ const getUserRollByEmail = async (req, res) => {
   }
 };
 
-// GET: Get  all user
-const getAllUser = async (req, res) => {
-  try {
-    const users = await req.db.usersCollection.find().toArray();
-    res.status(200).send(users);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ message: "Failed to get users" });
-  }
-};
-
-// PATCH: Patch update user role
-const updateUserRole = async (req, res) => {
-  const userId = req.params.id;
-  const { role } = req.body;
-
-  try {
-    const result = await req.db.usersCollection.updateOne(
-      { _id: new ObjectId(userId) },
-      { $set: { role } }
-    );
-
-    if (!result.modifiedCount) {
-      return res
-        .status(404)
-        .json({ message: "User not found or already has this role" });
-    }
-    res.send({
-      message: "User role updated successfully",
-      result,
-    });
-  } catch (error) {
-    console.error("Error updating user role:", error);
-    res.status(500).json({ message: "Failed to update user role" });
-  }
-};
-
 // GET /api/user/payment-history?user=email@example.com
 const getUserPaymentHistory = async (req, res) => {
   const { user } = req.query;
@@ -110,7 +73,5 @@ const getUserPaymentHistory = async (req, res) => {
 module.exports = {
   createOrUpdateUser,
   getUserRollByEmail,
-  getAllUser,
-  updateUserRole,
   getUserPaymentHistory,
 };
