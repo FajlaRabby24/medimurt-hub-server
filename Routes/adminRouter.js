@@ -13,65 +13,24 @@ const {
   createCategory,
   deleteCategory,
 } = require("../controllers/adminController");
-const { verifyFBToken } = require("../middleware/verifyFBToken");
-const verifyAdmin = require("../middleware/verifyAdmin");
+
 const AdminRouter = express.Router();
 
-AdminRouter.get(
-  "/advertisements",
-  verifyFBToken,
-  verifyAdmin,
-  getAllAdvetisements
-);
-AdminRouter.patch(
-  "/advertisements/:id",
-  verifyFBToken,
-  verifyAdmin,
-  updateAdStatus
-);
+AdminRouter.get("/advertisements", getAllAdvetisements);
+AdminRouter.patch("/advertisements/:id", updateAdStatus);
 
-AdminRouter.patch(
-  "/update-user-role/:id",
-  verifyFBToken,
-  verifyAdmin,
-  updateUserRole
-);
-AdminRouter.get("/manage-users", verifyFBToken, verifyAdmin, getAllUser);
+AdminRouter.patch("/update-user-role/:id", updateUserRole);
+AdminRouter.get("/manage-users", getAllUser);
 
-AdminRouter.get(
-  "/cart/all-payments",
-  verifyFBToken,
-  verifyAdmin,
-  getAllPendingPayments
-);
-AdminRouter.patch(
-  "/cart/accept-payment",
-  verifyFBToken,
-  verifyAdmin,
-  acceptPayment
-);
+AdminRouter.get("/cart/all-payments", getAllPendingPayments);
+AdminRouter.patch("/cart/accept-payment", acceptPayment);
 
-AdminRouter.get("/sales", verifyFBToken, verifyAdmin, getSalesData);
-AdminRouter.get(
-  "/sales-summary",
-  verifyFBToken,
-  verifyAdmin,
-  getSalesSummaryForAdmin
-);
+AdminRouter.get("/sales", getSalesData);
+AdminRouter.get("/sales-summary", getSalesSummaryForAdmin);
 
-AdminRouter.patch(
-  "/categories/:id",
-  verifyFBToken,
-  verifyAdmin,
-  updateCategory
-);
-AdminRouter.get("/categories", verifyFBToken, verifyAdmin, getAllCategories);
-AdminRouter.post("/categories", verifyFBToken, verifyAdmin, createCategory);
-AdminRouter.delete(
-  "/categories/:id",
-  verifyFBToken,
-  verifyAdmin,
-  deleteCategory
-);
+AdminRouter.patch("/categories/:id", updateCategory);
+AdminRouter.get("/categories", getAllCategories);
+AdminRouter.post("/categories", createCategory);
+AdminRouter.delete("/categories/:id", deleteCategory);
 
 module.exports = AdminRouter;

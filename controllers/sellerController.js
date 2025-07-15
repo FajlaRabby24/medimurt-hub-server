@@ -2,7 +2,7 @@ const { ObjectId } = require("mongodb");
 
 // Node.js with MongoDB (no mongoose)
 const getSellerPaymentHistory = async (req, res) => {
-  const seller = req.query.seller;
+  const seller = req.query.email;
   try {
     const result = await req.db.cartCollection
       .find({ seller_email: seller })
@@ -17,6 +17,7 @@ const getSellerPaymentHistory = async (req, res) => {
 // GET /api/seller/sales-summary?email=seller@gmail.com
 const getSellerSalesSummary = async (req, res) => {
   const sellerEmail = req.query.email;
+  console.log(sellerEmail);
   try {
     const result = await req.db.cartCollection
       .aggregate([

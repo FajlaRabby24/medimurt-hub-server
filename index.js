@@ -11,6 +11,10 @@ const stripe = require("stripe")(process.env.PAYMENT_GATEWAY_KEY);
 // firebase
 const admin = require("firebase-admin");
 const serviceAccount = require("./multi-vendor-firebase-key.json");
+const { verifyFBToken } = require("./middleware/verifyFBToken");
+const verifyAdmin = require("./middleware/verifyAdmin");
+const verifySeller = require("./middleware/verifySeller");
+const verifyEmail = require("./middleware/verifyEmail");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -62,9 +66,15 @@ async function run() {
     });
 
     // all routes
-    app.use("/api/admin", AdminRouter);
     app.use("/api/users", UserRouter);
-    app.use("/api/seller", SellerRouter);
+    app.use("/api/admin", verifyFBToken, verifyEmail, verifyAdmin, AdminRouter);
+    app.use(
+      "/api/seller",
+      verifyFBToken,
+      verifyEmail,
+      verifySeller,
+      SellerRouter
+    );
 
     // payment intent
     app.post("/create-payment-intent", async (req, res) => {

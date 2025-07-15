@@ -56,7 +56,8 @@ const createOrUpdateUser = async (req, res) => {
 //  GET: Get user role by email
 const getUserRollByEmail = async (req, res) => {
   try {
-    const email = req.params.email;
+    const email = req.query.email;
+    console.log({ email });
     if (!email) {
       return res.status(400).send({ message: "Email is required" });
     }
@@ -74,9 +75,9 @@ const getUserRollByEmail = async (req, res) => {
 
 // GET /api/user/payment-history?user=email@example.com
 const getUserPaymentHistory = async (req, res) => {
-  const { user } = req.query;
+  const { email } = req.query;
   const result = await req.db.cartCollection
-    .find({ user_email: user })
+    .find({ user_email: email })
     .sort({ created_at: -1 }) // most recent first
     .toArray();
   res.send(result);
