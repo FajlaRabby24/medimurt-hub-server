@@ -75,6 +75,41 @@ const getUserRollByEmail = async (req, res) => {
 
 // GET /api/user/payment-history?user=email@example.com
 const getUserPaymentHistory = async (req, res) => {
+  try {
+    const { email } = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const query = { user_email: email };
+
+    const [totalCount, payments] = await Promise.all([
+      req.db.cartCollection.countDocuments(query),
+      req.db.cartCollection
+        .find(query)
+        .skip(skip)
+        .limit(limit)
+        .sort({ created_at: -1 })
+        .toArray(),
+    ]);
+
+    res.status(200).json({
+      data: payments,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
+      totalCount,
+    });
+
+    // const { email } = req.query;
+    // const result = await req.db.cartCollection
+    //   .find({ user_email: email })
+    //   .sort({ created_at: -1 }) // most recent first
+    //   .toArray();
+    // res.send(result);
+  } catch (error) {
+    console.error("Error getting user role:", error);
+    res.status(500).send({ message: "Failed to get role" });
+  }
+
   const { email } = req.query;
   const result = await req.db.cartCollection
     .find({ user_email: email })
@@ -160,11 +195,29 @@ const getAllMedicines = async (req, res) => {
 const getAllMedicineByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    const medicines = await req.db.medicinesCollection
-      .find({ category })
-      .toArray();
+    const page = parseInt(req.query.page) || 1; // Default to page 1
+    const limit = parseInt(req.query.limit) || 5; // Default to 10 items per page
+    const skip = (page - 1) * limit;
+    const query = { category };
 
-    res.status(200).json(medicines);
+    const [totalCount, medicines] = await Promise.all([
+      req.db.medicinesCollection.countDocuments(query),
+      req.db.medicinesCollection.find(query).skip(skip).limit(limit).toArray(),
+    ]);
+
+    res.status(200).json({
+      data: medicines,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
+      totalCount,
+    });
+
+    // const { category } = req.params;
+    // const medicines = await req.db.medicinesCollection
+    //   .find({ category })
+    //   .toArray();
+
+    // res.status(200).json(medicines);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch medicines." });
   }

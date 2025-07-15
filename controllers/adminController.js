@@ -56,8 +56,21 @@ const getAllAdvetisements = async (req, res) => {
 // GET: Get  all user || Admin
 const getAllUser = async (req, res) => {
   try {
-    const users = await req.db.usersCollection.find().toArray();
-    res.status(200).send(users);
+    const page = parseInt(req.query.page) || 1; // Default to page 1
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
+    const skip = (page - 1) * limit;
+
+    const [totalCount, users] = await Promise.all([
+      req.db.usersCollection.countDocuments(),
+      req.db.usersCollection.find().skip(skip).limit(limit).toArray(),
+    ]);
+
+    res.status(200).json({
+      data: users,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
+      totalCount,
+    });
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ message: "Failed to get users" });
