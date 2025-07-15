@@ -134,10 +134,33 @@ const getDiscountedMedicines = async (req, res) => {
 };
 
 // GET: Get all medicines
+// const getAllMedicines = async (req, res) => {
+//   try {
+//     const medicines = await req.db.medicinesCollection.find().toArray();
+//     res.status(200).json(medicines);
+//   } catch (error) {
+//     res.status(500).json({ message: "Failed to fetch medicines", error });
+//   }
+// };
+
+// GET: Paginated Medicines
 const getAllMedicines = async (req, res) => {
   try {
-    const medicines = await req.db.medicinesCollection.find().toArray();
-    res.status(200).json(medicines);
+    const page = parseInt(req.query.page) || 1; // Default to page 1
+    const limit = parseInt(req.query.limit) || 5; // Default to 10 items per page
+    const skip = (page - 1) * limit;
+
+    const [totalCount, medicines] = await Promise.all([
+      req.db.medicinesCollection.countDocuments(),
+      req.db.medicinesCollection.find().skip(skip).limit(limit).toArray(),
+    ]);
+
+    res.status(200).json({
+      data: medicines,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
+      totalCount,
+    });
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch medicines", error });
   }
