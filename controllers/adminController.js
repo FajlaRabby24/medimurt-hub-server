@@ -80,30 +80,47 @@ const getAllUser = async (req, res) => {
 // GET all categories || Admin
 const getAllCategories = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // First get total count
+    const totalCount =
+      await req.db.medicinesCategoryCollection.countDocuments();
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Paginated aggregation
     const categories = await req.db.medicinesCategoryCollection
       .aggregate([
         {
           $lookup: {
-            from: "medicines", // join with medicines collection
-            localField: "category_name", // category name in this collection
-            foreignField: "category", // category field in medicines
-            as: "medicines", // store matched medicines here
+            from: "medicines",
+            localField: "category_name",
+            foreignField: "category",
+            as: "medicines",
           },
         },
         {
           $addFields: {
-            total_medicines: { $size: "$medicines" }, // count number of medicines
+            total_medicines: { $size: "$medicines" },
           },
         },
         {
           $project: {
-            medicines: 0, // remove full medicines array from output
+            medicines: 0,
           },
         },
+        { $skip: skip },
+        { $limit: limit },
       ])
       .toArray();
 
-    res.status(200).json(categories);
+    res.status(200).json({
+      data: categories,
+      totalCount,
+      totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch categories with medicine count",
