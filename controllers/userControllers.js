@@ -263,6 +263,30 @@ const getUserCart = async (req, res) => {
   }
 };
 
+// update user profile
+const updateUserProfile = async (req, res) => {
+  try {
+    const email = req.query.email;
+    const { name, imageUrl } = req.body;
+    console.log(req.body);
+    const updatedDoc = {
+      $set: {
+        name,
+        image: imageUrl,
+      },
+    };
+    const result = await req.db.usersCollection.updateOne(
+      { email },
+      updatedDoc
+    );
+    res
+      .status(200)
+      .send({ message: "Profile updated successfully!", ...result });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update profile", error });
+  }
+};
+
 module.exports = {
   createOrUpdateUser,
   getUserRollByEmail,
@@ -278,4 +302,5 @@ module.exports = {
   getUserCart,
   updateCartAfterPayment,
   getAllMedicineByCategory,
+  updateUserProfile,
 };
