@@ -32,8 +32,21 @@ const getSalesSummaryForAdmin = async (req, res) => {
 // Get all advertisements (Admin access)
 const getAllAdvetisements = async (req, res) => {
   try {
-    const result = await req.db.advertisementsCollection.find().toArray();
-    res.status(200).json(result);
+    const page = parseInt(req.query.page) || 1; // Default to page 1
+    const limit = parseInt(req.query.limit) || 5; // Default to 10 items per page
+    const skip = (page - 1) * limit;
+
+    const [totalCount, advertisements] = await Promise.all([
+      req.db.advertisementsCollection.countDocuments(),
+      req.db.advertisementsCollection.find().skip(skip).limit(limit).toArray(),
+    ]);
+
+    res.status(200).json({
+      data: advertisements,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
+      totalCount,
+    });
   } catch (error) {
     console.error("Failed to fetch advertisements:", error);
     res.status(500).json({ error: "Failed to fetch advertisements" });

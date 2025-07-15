@@ -133,16 +133,6 @@ const getDiscountedMedicines = async (req, res) => {
   }
 };
 
-// GET: Get all medicines
-// const getAllMedicines = async (req, res) => {
-//   try {
-//     const medicines = await req.db.medicinesCollection.find().toArray();
-//     res.status(200).json(medicines);
-//   } catch (error) {
-//     res.status(500).json({ message: "Failed to fetch medicines", error });
-//   }
-// };
-
 // GET: Paginated Medicines
 const getAllMedicines = async (req, res) => {
   try {
