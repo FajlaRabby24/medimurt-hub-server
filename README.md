@@ -37,6 +37,7 @@ This is the **Express + MongoDB** based backend server for the Medicine E-commer
 ## 🚀 How to Run
 
 ```bash
+git clone https://github.com/Programming-Hero-Web-Course4/b11a12-server-side-FajlaRabby24.git
 npm install
 npm run dev
 ```
