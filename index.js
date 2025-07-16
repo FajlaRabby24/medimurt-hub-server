@@ -10,7 +10,10 @@ const AdminRouter = require("./Routes/AdminRouter");
 const stripe = require("stripe")(process.env.PAYMENT_GATEWAY_KEY);
 // firebase
 const admin = require("firebase-admin");
-const serviceAccount = require("./multi-vendor-firebase-key.json");
+const decodedKey = Buffer.from(process.env.FB_SERVICE_KEY, "base64").toString(
+  "utf8"
+);
+const serviceAccount = JSON.parse(decodedKey);
 const { verifyFBToken } = require("./middleware/verifyFBToken");
 const verifyAdmin = require("./middleware/verifyAdmin");
 const verifySeller = require("./middleware/verifySeller");
@@ -41,7 +44,7 @@ app.use((req, res, next) => {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
     const db = client.db("medicineCenter");
     // collection
@@ -79,7 +82,6 @@ async function run() {
     // payment intent
     app.post("/create-payment-intent", async (req, res) => {
       const grandTotalInCents = req.body.grandTotalInCents;
-      console.log(grandTotalInCents);
       try {
         const paymentIntent = await stripe.paymentIntents.create({
           amount: grandTotalInCents,
@@ -93,8 +95,8 @@ async function run() {
       }
     });
 
-    await client.db("admin").command({ ping: 1 });
-    console.log("🚀 Pinged your deployment.");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("🚀 Pinged your deployment.");
   } finally {
   }
 }

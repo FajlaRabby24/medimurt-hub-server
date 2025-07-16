@@ -33,7 +33,6 @@ const getSellerPaymentHistory = async (req, res) => {
 // GET /api/seller/sales-summary?email=seller@gmail.com
 const getSellerSalesSummary = async (req, res) => {
   const sellerEmail = req.query.email;
-  console.log(sellerEmail);
   try {
     const result = await req.db.cartCollection
       .aggregate([

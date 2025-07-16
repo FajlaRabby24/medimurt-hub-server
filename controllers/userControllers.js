@@ -57,7 +57,6 @@ const createOrUpdateUser = async (req, res) => {
 const getUserRollByEmail = async (req, res) => {
   try {
     const email = req.query.email;
-    console.log({ email });
     if (!email) {
       return res.status(400).send({ message: "Email is required" });
     }
@@ -175,7 +174,6 @@ const getAllMedicines = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
     const skip = (page - 1) * limit;
-    console.log(searchQuery);
 
     const filter = {
       $or: [
@@ -252,7 +250,6 @@ const addToCart = async (req, res) => {
 const updateCartAfterPayment = async (req, res) => {
   try {
     const { email, transactionId } = req.body;
-    console.log(req.body);
     if (!email && !transactionId)
       return res.status(400).json({ message: "Missing required data" });
 
@@ -338,7 +335,6 @@ const updateUserProfile = async (req, res) => {
   try {
     const email = req.query.email;
     const { name, imageUrl } = req.body;
-    console.log(req.body);
     const updatedDoc = {
       $set: {
         name,
