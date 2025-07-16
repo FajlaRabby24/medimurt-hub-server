@@ -171,13 +171,24 @@ const getDiscountedMedicines = async (req, res) => {
 // GET: Paginated Medicines
 const getAllMedicines = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1; // Default to page 1
-    const limit = parseInt(req.query.limit) || 5; // Default to 10 items per page
+    const searchQuery = req.query.search;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
     const skip = (page - 1) * limit;
+    console.log(searchQuery);
+
+    const filter = {
+      $or: [
+        { medicine_name: { $regex: searchQuery, $options: "i" } },
+        { generic_name: { $regex: searchQuery, $options: "i" } },
+        { company: { $regex: searchQuery, $options: "i" } },
+        { category: { $regex: searchQuery, $options: "i" } },
+      ],
+    };
 
     const [totalCount, medicines] = await Promise.all([
       req.db.medicinesCollection.countDocuments(),
-      req.db.medicinesCollection.find().skip(skip).limit(limit).toArray(),
+      req.db.medicinesCollection.find(filter).skip(skip).limit(limit).toArray(),
     ]);
 
     res.status(200).json({
@@ -195,8 +206,8 @@ const getAllMedicines = async (req, res) => {
 const getAllMedicineByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    const page = parseInt(req.query.page) || 1; // Default to page 1
-    const limit = parseInt(req.query.limit) || 5; // Default to 10 items per page
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
     const skip = (page - 1) * limit;
     const query = { category };
 
@@ -211,13 +222,6 @@ const getAllMedicineByCategory = async (req, res) => {
       totalPages: Math.ceil(totalCount / limit),
       totalCount,
     });
-
-    // const { category } = req.params;
-    // const medicines = await req.db.medicinesCollection
-    //   .find({ category })
-    //   .toArray();
-
-    // res.status(200).json(medicines);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch medicines." });
   }
