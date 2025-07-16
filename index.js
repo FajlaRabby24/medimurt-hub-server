@@ -3,10 +3,10 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 dotenv.config();
-const errorHandler = require("./middleware/ErrorHandler");
-const UserRouter = require("./Routes/userRouter");
-const SellerRouter = require("./Routes/sellerRouter");
-const AdminRouter = require("./Routes/AdminRouter");
+const errorHandler = require("./middleware/ErrorHandler.js");
+const UserRouter = require("./Routes/userRouter.js");
+const SellerRouter = require("./Routes/sellerRouter.js");
+const AdminRouter = require("./Routes/adminRouter.js");
 const stripe = require("stripe")(process.env.PAYMENT_GATEWAY_KEY);
 // firebase
 const admin = require("firebase-admin");
@@ -14,10 +14,10 @@ const decodedKey = Buffer.from(process.env.FB_SERVICE_KEY, "base64").toString(
   "utf8"
 );
 const serviceAccount = JSON.parse(decodedKey);
-const { verifyFBToken } = require("./middleware/verifyFBToken");
-const verifyAdmin = require("./middleware/verifyAdmin");
-const verifySeller = require("./middleware/verifySeller");
-const verifyEmail = require("./middleware/verifyEmail");
+const { verifyFBToken } = require("./middleware/verifyFBToken.js");
+const verifyAdmin = require("./middleware/verifyAdmin.js");
+const verifySeller = require("./middleware/verifySeller.js");
+const verifyEmail = require("./middleware/verifyEmail.js");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
