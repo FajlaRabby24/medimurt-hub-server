@@ -62,7 +62,6 @@ const createOrUpdateUser = async (req, res) => {
     const result = await req.db.usersCollection.insertOne(newUser);
     res.status(201).json({ message: "User created successfully", ...result });
   } catch (error) {
-    console.error("Error creating user:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -81,7 +80,6 @@ const getUserRollByEmail = async (req, res) => {
 
     res.send({ role: user.role || "user" });
   } catch (error) {
-    console.error("Error getting user role:", error);
     res.status(500).send({ message: "Failed to get role" });
   }
 };
@@ -111,15 +109,7 @@ const getUserPaymentHistory = async (req, res) => {
       totalPages: Math.ceil(totalCount / limit),
       totalCount,
     });
-
-    // const { email } = req.query;
-    // const result = await req.db.cartCollection
-    //   .find({ user_email: email })
-    //   .sort({ created_at: -1 }) // most recent first
-    //   .toArray();
-    // res.send(result);
   } catch (error) {
-    console.error("Error getting user role:", error);
     res.status(500).send({ message: "Failed to get role" });
   }
 

@@ -48,7 +48,6 @@ const getAllAdvetisements = async (req, res) => {
       totalCount,
     });
   } catch (error) {
-    console.error("Failed to fetch advertisements:", error);
     res.status(500).json({ error: "Failed to fetch advertisements" });
   }
 };
@@ -72,7 +71,6 @@ const getAllUser = async (req, res) => {
       totalCount,
     });
   } catch (error) {
-    console.error("Error fetching users:", error);
     res.status(500).json({ message: "Failed to get users" });
   }
 };
@@ -237,7 +235,6 @@ const updateUserRole = async (req, res) => {
       result,
     });
   } catch (error) {
-    console.error("Error updating user role:", error);
     res.status(500).json({ message: "Failed to update user role" });
   }
 };
@@ -265,10 +262,10 @@ const updateCategory = async (req, res) => {
 // PATCH /api/cart/accept-payment/:email
 const acceptPayment = async (req, res) => {
   try {
-    const { email } = req.query;
+    const { paymentAcceptEmail } = req.query;
 
     const result = await req.db.cartCollection.updateMany(
-      { user_email: email, payment_status: { $ne: "paid" } },
+      { user_email: paymentAcceptEmail, payment_status: { $ne: "paid" } },
       {
         $set: {
           payment_status: "paid",
