@@ -16,19 +16,13 @@ const {
   getAllMedicineByCategory,
   updateUserProfile,
   getUserOrdersSummary,
+  getRecentMedicines,
 } = require("../controllers/userControllers");
 const { verifyFBToken } = require("../middleware/verifyFBToken");
 const verifyUser = require("../middleware/verifyUser");
 const verifyEmail = require("../middleware/verifyEmail");
 const UserRouter = express.Router();
 
-UserRouter.get(
-  "/role",
-  verifyFBToken,
-  verifyEmail,
-  verifyUser,
-  getUserRollByEmail
-);
 UserRouter.get("/advertisements/active", getActiveAd);
 
 UserRouter.post("/", createOrUpdateUser);
@@ -40,6 +34,17 @@ UserRouter.get("/medicines", getAllMedicines);
 UserRouter.get("/medicines/category/:category", getAllMedicineByCategory);
 
 UserRouter.get("/cart", verifyFBToken, verifyEmail, verifyUser, getUserCart);
+
+UserRouter.get("/recent-medicines", getRecentMedicines);
+
+UserRouter.get(
+  "/role",
+  verifyFBToken,
+  verifyEmail,
+  verifyUser,
+  getUserRollByEmail
+);
+
 UserRouter.post(
   "/add-to-cart",
   verifyFBToken,

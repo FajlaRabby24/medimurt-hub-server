@@ -12,6 +12,20 @@ const getActiveAd = async (req, res) => {
   }
 };
 
+// GET recents medicines
+const getRecentMedicines = async (req, res) => {
+  try {
+    const recent = await req.db.medicinesCollection
+      .find()
+      .sort({ created_at: -1 })
+      .limit(8)
+      .toArray();
+    res.json(recent);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch recent medicines" });
+  }
+};
+
 // Create new user
 const createOrUpdateUser = async (req, res) => {
   try {
@@ -402,6 +416,7 @@ const getUserOrdersSummary = async (req, res) => {
 
 module.exports = {
   createOrUpdateUser,
+  getRecentMedicines,
   getUserRollByEmail,
   getUserPaymentHistory,
   getAllCategories,
