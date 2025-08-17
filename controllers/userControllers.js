@@ -200,7 +200,12 @@ const getAllMedicines = async (req, res) => {
 
     const [totalCount, medicines] = await Promise.all([
       req.db.medicinesCollection.countDocuments(),
-      req.db.medicinesCollection.find(filter).skip(skip).limit(limit).toArray(),
+      req.db.medicinesCollection
+        .find(filter)
+        .skip(skip)
+        .sort({ created_at: -1 })
+        .limit(limit)
+        .toArray(),
     ]);
 
     res.status(200).json({
