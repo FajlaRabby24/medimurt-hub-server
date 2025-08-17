@@ -353,6 +353,53 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
+// GET /api/users/:email/orders-summary
+const getUserOrdersSummary = async (req, res) => {
+  try {
+    const email = req.query.email;
+
+    if (!email) {
+      return res.status(400).json({ message: "User email is required" });
+    }
+
+    const summary = await req.db.cartCollection
+      .aggregate([
+        {
+          $match: { user_email: email }, // ✅ filter by logged-in user
+        },
+        {
+          $group: {
+            _id: "$payment_status",
+            totalOrders: { $sum: 1 }, // count orders
+            totalAmount: { $sum: "$total_price" }, // sum order values
+          },
+        },
+      ])
+      .toArray();
+
+    const paid = summary.find((s) => s._id === "paid") || {
+      totalOrders: 0,
+      totalAmount: 0,
+    };
+    const pending = summary.find((s) => s._id === "pending") || {
+      totalOrders: 0,
+      totalAmount: 0,
+    };
+
+    res.json({
+      totalOrders: paid.totalOrders + pending.totalOrders,
+      completedOrders: paid.totalOrders,
+      pendingOrders: pending.totalOrders,
+      totalSpent: paid.totalAmount + pending.totalAmount, // 💰 total amount spent
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Failed to fetch user order summary",
+      error: err.message,
+    });
+  }
+};
+
 module.exports = {
   createOrUpdateUser,
   getUserRollByEmail,
@@ -369,4 +416,5 @@ module.exports = {
   updateCartAfterPayment,
   getAllMedicineByCategory,
   updateUserProfile,
+  getUserOrdersSummary,
 };

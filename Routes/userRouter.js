@@ -15,6 +15,7 @@ const {
   updateCartAfterPayment,
   getAllMedicineByCategory,
   updateUserProfile,
+  getUserOrdersSummary,
 } = require("../controllers/userControllers");
 const { verifyFBToken } = require("../middleware/verifyFBToken");
 const verifyUser = require("../middleware/verifyUser");
@@ -89,6 +90,13 @@ UserRouter.patch(
   verifyEmail,
   verifyUser,
   updateUserProfile
+);
+UserRouter.get(
+  "/orders-summary",
+  verifyFBToken,
+  verifyEmail,
+  verifyUser,
+  getUserOrdersSummary
 );
 
 module.exports = UserRouter;
